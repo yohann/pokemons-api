@@ -8,7 +8,9 @@ class PokemonsService
 
   def self.get(pokemon_name)
     pokemon_name.downcase!
-    request = RestClient.get(POKEAPI_URL + pokemon_name)
-    JSON.parse request.body
+    Rails.cache.fetch(["pokemon#show/#{pokemon_name}", :fetch_pokemon], expires_in: 10.minutes) do
+      request = RestClient.get(POKEAPI_URL + pokemon_name)
+      JSON.parse(request.body)
+    end
   end
 end
